@@ -1,0 +1,19 @@
+{
+  "71e7e598-7afb-4c1b-b5d7-fa8510f5d135": {
+    "id": "71e7e598-7afb-4c1b-b5d7-fa8510f5d135",
+    "eventDate": "2026-03-12",
+    "venue": "FDP Party",
+    "format": "duo",
+    "plannedDuration": "20",
+    "actualDuration": "22",
+    "audienceCount": "100",
+    "description": "Театрализованное выступление ",
+    "preAgreements": "Определен болевой порог. \nВыяснили болевой порог",
+    "missedDiscussions": "Условные знаки по ходу экшена\nПереход к экшену",
+    "safetyRating": "4",
+    "partnerDifficulties": "растерянность",
+    "limitViolations": "не обсудили как именно партнер перейдет к экшену",
+    "aftercare": "поговорили о общих впечатлениях",
+    "partnerWords": "оценил что я не превысила его болевой порог, и е"
+  }
+}
