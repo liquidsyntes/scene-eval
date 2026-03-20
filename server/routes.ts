@@ -77,7 +77,10 @@ export async function registerRoutes(
 function generateMarkdown(e: any): string {
   return `## Блок 1. Общие данные
 
-* Дата, площадка, событие: ${e.eventDate || ''} / ${e.venue || ''}
+* Название номера: ${e.actName || ''}
+* Дата: ${e.eventDate || ''}
+* Площадка: ${e.venue || ''}
+* Событие: ${e.eventName || ''}
 * Формат: ${e.format || ''}
 * Плановая длительность: ${e.plannedDuration || ''} / фактическая: ${e.actualDuration || ''}
 * Количество зрителей: ${e.audienceCount || ''}
@@ -111,6 +114,8 @@ function generateMarkdown(e: any): string {
    * О чём: ${e.actualStory || ''}
    * Удалось: ${e.bestDramaturgy || ''}
    * Провалилось: ${e.worstDramaturgy || ''}
+   * Оценка внутренней истории: ${e.storyRating || '—'}/5
+   * Обоснование: ${e.storyRatingReason || ''}
 
 ---
 
@@ -123,9 +128,13 @@ function generateMarkdown(e: any): string {
 3. Контакт с партнёром:
    * Синхронность: ${e.partnerSync || ''}
    * Потеря связи: ${e.partnerLoss || ''}
+   * Оценка контакта с партнёром: ${e.partnerContactRating || '—'}/5
+   * Обоснование: ${e.partnerContactRatingReason || ''}
 4. Контакт с залом:
    * Чувствовал зал: ${e.audienceContact || ''}
    * Потерял зал: ${e.audienceLoss || ''}
+   * Оценка контакта с залом: ${e.audienceContactRating || '—'}/5
+   * Обоснование: ${e.audienceContactRatingReason || ''}
 5. Голос:
    * Сработало: ${e.voiceWorked || ''}
    * Не сработало: ${e.voiceFailed || ''}
@@ -136,10 +145,12 @@ function generateMarkdown(e: any): string {
 
 1. Костюм: ${e.costumeReadability || ''}
    * Проблемы: ${e.costumeIssues || ''}
+   * Бюджет: ${e.costumeBudget || ''}
 2. Реквизит:
    * Сработало: ${e.propsWorked || ''}
    * Проблемы: ${e.propsIssues || ''}
 3. Свет и музыка:
+   * Используемая музыка: ${e.musicUsed || ''}
    * Усилили: ${e.lightMusicGood || ''}
    * Мешали: ${e.lightMusicBad || ''}
 4. Техсбои: ${e.techFails || ''}

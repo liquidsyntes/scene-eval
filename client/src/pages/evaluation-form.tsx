@@ -43,11 +43,11 @@ const BLOCKS = [
 
 // Fields per block for progress calculation
 const BLOCK_FIELDS: string[][] = [
-  ["eventDate", "venue", "format", "plannedDuration", "actualDuration", "audienceCount", "description"],
+  ["actName", "eventDate", "venue", "eventName", "format", "plannedDuration", "actualDuration", "audienceCount", "description"],
   ["preAgreements", "missedDiscussions", "partnerDifficulties", "limitViolations", "aftercare", "partnerWords", "safetyRating", "safetyRatingReason"],
-  ["structure", "tempoIssues", "organicTransitions", "roughTransitions", "actualStory", "bestDramaturgy", "worstDramaturgy"],
-  ["bodyPresence", "parasiticMovements", "spaceUsage", "ignoredAreas", "partnerSync", "partnerLoss", "audienceContact", "audienceLoss", "voiceWorked", "voiceFailed"],
-  ["costumeReadability", "costumeIssues", "propsWorked", "propsIssues", "lightMusicGood", "lightMusicBad", "techFails", "techFailHandling"],
+  ["structure", "tempoIssues", "organicTransitions", "roughTransitions", "actualStory", "bestDramaturgy", "worstDramaturgy", "storyRating", "storyRatingReason"],
+  ["bodyPresence", "parasiticMovements", "spaceUsage", "ignoredAreas", "partnerSync", "partnerLoss", "partnerContactRating", "partnerContactRatingReason", "audienceContact", "audienceLoss", "audienceContactRating", "audienceContactRatingReason", "voiceWorked", "voiceFailed"],
+  ["costumeReadability", "costumeIssues", "costumeBudget", "propsWorked", "propsIssues", "musicUsed", "lightMusicGood", "lightMusicBad", "techFails", "techFailHandling"],
   ["audienceEngaged", "audienceDiscomfort", "feedbackQuotes", "feedbackThemes", "partnerBest", "partnerImprove"],
   ["strong1", "strong2", "strong3", "weak1", "weak2", "weak3", "removeCompletely", "changeRadically", "addNew", "mainFocus"],
 ];
@@ -123,13 +123,50 @@ function SafetySlider({ value, onChange }: { value: number; onChange: (val: numb
   );
 }
 
+function RatingSlider({ label, value, onChange, testId }: { label: string; value: number; onChange: (val: number) => void; testId?: string }) {
+  const labels = ["", "Плохо", "Слабо", "Нормально", "Хорошо", "Отлично"];
+  const colors = ["", "bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-blue-500", "bg-emerald-500"];
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <Label className="text-sm font-medium text-foreground">{label}</Label>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className={`${colors[value]} bg-opacity-10 text-xs`}>
+            {value}/5
+          </Badge>
+          <span className="text-xs text-muted-foreground">{labels[value]}</span>
+        </div>
+      </div>
+      <div className="px-1">
+        <Slider
+          data-testid={testId}
+          value={[value]}
+          onValueChange={([v]) => onChange(v)}
+          min={1}
+          max={5}
+          step={1}
+          className="w-full"
+        />
+        <div className="flex justify-between mt-1">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <span key={n} className="text-[10px] text-muted-foreground">{n}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Block content components
 function Block0({ data, onChange }: { data: FormData; onChange: (field: string, value: string) => void }) {
   return (
     <div className="space-y-4">
+      <TextInput label="Название номера" field="actName" value={data.actName} onChange={onChange} placeholder="напр. Метаморфозы" />
+      <TextInput label="Дата" field="eventDate" value={data.eventDate} onChange={onChange} type="date" />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TextInput label="Дата" field="eventDate" value={data.eventDate} onChange={onChange} type="date" />
-        <TextInput label="Площадка / событие" field="venue" value={data.venue} onChange={onChange} />
+        <TextInput label="Площадка" field="venue" value={data.venue} onChange={onChange} placeholder="напр. Клуб X" />
+        <TextInput label="Событие" field="eventName" value={data.eventName} onChange={onChange} placeholder="напр. Вечер импровизаций" />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="format" className="text-sm font-medium text-foreground">Формат</Label>
@@ -199,6 +236,10 @@ function Block2({ data, onChange }: { data: FormData; onChange: (field: string, 
       <TextArea label="О чём была эта сцена по факту" hint="Не замысел, а то, что реально получилось" field="actualStory" value={data.actualStory} onChange={onChange} />
       <TextArea label="Где драматургия удалась" field="bestDramaturgy" value={data.bestDramaturgy} onChange={onChange} />
       <TextArea label="Где драматургия провалилась" field="worstDramaturgy" value={data.worstDramaturgy} onChange={onChange} />
+      <div className="pt-2 border-t border-border/40">
+        <RatingSlider label="Общая оценка внутренней истории" value={data.storyRating || 3} onChange={(v) => onChange("storyRating", String(v))} testId="slider-story" />
+      </div>
+      <TextArea label="Обоснование оценки" field="storyRatingReason" value={data.storyRatingReason} onChange={onChange} />
     </div>
   );
 }
@@ -221,11 +262,19 @@ function Block3({ data, onChange }: { data: FormData; onChange: (field: string, 
       </div>
       <TextArea label="Синхронность и считывание" field="partnerSync" value={data.partnerSync} onChange={onChange} />
       <TextArea label="Потеря связи" hint="Что пошло не так, как отреагировал" field="partnerLoss" value={data.partnerLoss} onChange={onChange} />
+      <div className="pt-2 border-t border-border/40">
+        <RatingSlider label="Общая оценка контакта с партнёром" value={data.partnerContactRating || 3} onChange={(v) => onChange("partnerContactRating", String(v))} testId="slider-partner-contact" />
+      </div>
+      <TextArea label="Обоснование оценки" field="partnerContactRatingReason" value={data.partnerContactRatingReason} onChange={onChange} />
       <div className="space-y-1 mb-2 pt-2 border-t border-border/40">
         <h4 className="text-sm font-semibold text-foreground">4. Контакт с залом</h4>
       </div>
       <TextArea label="Чувствовал зал" hint="Взгляд, тишина, реакция — как это влияло на игру" field="audienceContact" value={data.audienceContact} onChange={onChange} />
       <TextArea label="Потерял зал" hint="Что происходило на сцене в эти моменты" field="audienceLoss" value={data.audienceLoss} onChange={onChange} />
+      <div className="pt-2 border-t border-border/40">
+        <RatingSlider label="Общая оценка контакта с залом" value={data.audienceContactRating || 3} onChange={(v) => onChange("audienceContactRating", String(v))} testId="slider-audience-contact" />
+      </div>
+      <TextArea label="Обоснование оценки" field="audienceContactRatingReason" value={data.audienceContactRatingReason} onChange={onChange} />
       <div className="space-y-1 mb-2 pt-2 border-t border-border/40">
         <h4 className="text-sm font-semibold text-foreground">5. Голос и звук</h4>
       </div>
@@ -243,6 +292,7 @@ function Block4({ data, onChange }: { data: FormData; onChange: (field: string, 
       </div>
       <TextArea label="Считываемость роли и настроения" field="costumeReadability" value={data.costumeReadability} onChange={onChange} />
       <TextArea label="Что было неудобно или мешало" field="costumeIssues" value={data.costumeIssues} onChange={onChange} />
+      <TextInput label="Бюджет на костюм(ы)" field="costumeBudget" value={data.costumeBudget} onChange={onChange} placeholder="напр. 5000 грн / 150 EUR" />
       <div className="space-y-1 mb-2 pt-2 border-t border-border/40">
         <h4 className="text-sm font-semibold text-foreground">2. Реквизит</h4>
       </div>
@@ -251,6 +301,7 @@ function Block4({ data, onChange }: { data: FormData; onChange: (field: string, 
       <div className="space-y-1 mb-2 pt-2 border-t border-border/40">
         <h4 className="text-sm font-semibold text-foreground">3. Свет и музыка</h4>
       </div>
+      <TextArea label="Используемая музыка" hint="Названия треков, исполнители" field="musicUsed" value={data.musicUsed} onChange={onChange} />
       <TextArea label="Где усиливали сцену" field="lightMusicGood" value={data.lightMusicGood} onChange={onChange} />
       <TextArea label="Где мешали или не хватало" field="lightMusicBad" value={data.lightMusicBad} onChange={onChange} />
       <div className="space-y-1 mb-2 pt-2 border-t border-border/40">
